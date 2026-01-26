@@ -1,0 +1,4 @@
+id,from_station,to_station,line_name,start_station,end_station,path_time
+1,RAJIV CHOWK,DELHI GATE,Blue Line,RAJIV CHOWK,MANDI HOUSE,0:03:56
+2,RAJIV CHOWK,DELHI GATE,Violet Line,MANDI HOUSE,DELHI GATE,0:03:41
+3,KASHMERE GATE,CHAWRI BAZAR,Yellow Line,KASHMERE GATE,CHAWRI BAZAR,0:04:29
