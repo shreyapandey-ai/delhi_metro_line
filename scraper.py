@@ -99,22 +99,22 @@ for f, t in pairs:
     )
 
     for r in data["route"]:
-
-      cur.execute(
-          """
-          INSERT INTO routes
-         (from_station, to_station, line_name, start_station, end_station, path_time)
-          VALUES (?,?,?,?,?,?)
-          """,
+          cur.execute(
+                  """
+               INSERT INTO routes
+               (from_station, to_station, line_code, travel_time, line_name)
+                VALUES (?,?,?,?,?)
+                  """,
         (
-           data["from"],
-           data["to"],
-           r["line"] if isinstance(r["line"], str) else json.dumps(r["line"]),
-           r["start"],
-           r["end"],
-           r["path_time"]
+                    data["from"],
+                     data["to"],
+                     r.get("line_code") or r.get("line"),
+                    int(r["path_time"].split(":")[0]) * 60
+                   + int(r["path_time"].split(":")[1]),
+                     r.get("line")
         )
-    )
+   )
+
 
 
 
