@@ -1,8 +1,8 @@
 # delhi_metro_line
 
-🚇 Delhi Metro Line – SQLite Database Project
+# 🚇 Delhi Metro Line – SQLite Database Project
 
-This repository contains a structured SQLite database built from multiple CSV datasets related to the Delhi Metro network.
+# This repository contains a structured SQLite database built from multiple CSV datasets related to the Delhi Metro network.
 The project focuses on data modeling, normalization, and querying, not just scraping or dumping CSVs.
 
 📌 Project Overview
