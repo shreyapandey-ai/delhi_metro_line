@@ -4,7 +4,8 @@
 
 # This repository contains a structured SQLite database built from multiple CSV datasets related to the Delhi Metro network.
 The project focuses on data modeling, normalization, and querying, not just scraping or dumping CSVs.
-![Screenshot](route.png)
+![Uploading fare_calci.png…]()
+
 
 📌 Project Overview
 
