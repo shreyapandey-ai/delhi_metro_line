@@ -1,183 +1,268 @@
-# delhi_metro_line
+# 🚇 Delhi Metro Line ETL & Routing Pipeline
 
-# 🚇 Delhi Metro Line – SQLite Database Project
+## 📌 Project Overview
 
-# This repository contains a structured SQLite database built from multiple CSV datasets related to the Delhi Metro network.
-The project focuses on data modeling, normalization, and querying, not just scraping or dumping CSVs.
-## 🧭 Route Finder
-![Route](images/route.png)
+This project implements a **data engineering pipeline** for Delhi Metro data that:
 
+- Extracts station and route information dynamically using DMRC backend APIs  
+- Normalizes and stores the data
+- Enables calculation of the **shortest route** between any two metro stations  
+- Handles structured storage in SQLite and visual reference via CSV
 
-
-## 🧮 Fare Calculator
-![Fare Calculator](images/fare_calci.png)
-
-
-
-## 🕐 First & Last Train Timings
-![First Last Train](images/first_last.png)
+This is designed as a **realistic ETL + graph traversal assignment** demonstrating API extraction, clean data modeling, and algorithmic routing.
 
 ---
 
-## 🛤️ Metro Lines
+## 🧱 Pipeline Architecture
+
+Delhi Metro Backend APIs
+↓
+[Extract]
+• Line list
+• Station details
+• Routes between station pairs
+↓
+[Transform]
+• Normalize nested API data
+• Build adjacency and graph structure
+• Convert strings to usable formats (times, codes)
+↓
+[Load / Use]
+• SQLite database for storage
+• Shortest path algorithms in Python
+• CSV export (optional)
+
+yaml
+Copy code
+
+---
+
+## 🌐 APIs Used
+
+### 1. Line List
+Fetches available metro lines:
+
+GET https://backend.delhimetrorail.com/api/v2/en/line_list?format=json
+
+pgsql
+Copy code
+
+### 2. Stations by Line
+Lists stations for each line:
+
+GET https://backend.delhimetrorail.com/api/v2/en/station_by_line/{code}
+
+shell
+Copy code
+
+### 3. Fare with Route
+Fetches fare and route details between two stations:
+
+GET https://backend.delhimetrorail.com/api/v2/en/new_fare_with_route/{f}/{t}/least-distance/
+
+sql
+Copy code
+
+### 4. First and Last Train
+Fetches first/last train timings between stations:
+
+GET https://backend.delhimetrorail.com/api/v2/en/first_and_last_train_with_filter/{f}/{t}/least-distance/
+
+yaml
+Copy code
+
+---
+
+## 📂 Repository Structure
+
+delhi_metro_line/
+│
+├── db/ # SQLite database output
+├── images/ # Screenshots used in this README
+├── src/ # Python source code
+│ ├── graph.py # Builds graph from DB for routing
+│ ├── shortest_path.py # Dijkstra implementation
+│ └── app.py # Routing entry point
+|
+├── scraper.py # ETL to fetch DMRC data into SQLite
+├── pipeline.py # (Optional) orchestrates scraper + routing
+├── README.md # This documentation
+├── .gitignore
+└── requirements.txt # Python dependencies
+
+yaml
+Copy code
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Language  | Python 3.x |
+| HTTP      | `requests` |
+| Data      | SQLite |
+| Graph     | Dijkstra algorithm |
+| CSV/Export| Optional (Python) |
+
+---
+
+## 📌 Database Schema
+
+The SQLite database includes the following tables:
+
+### **lines**
+Columns:
+- `line_code` TEXT (PK)
+- `line_name` TEXT
+- `status` TEXT
+
+### **stations**
+Columns:
+- `station_code` TEXT (PK)
+- `station_name` TEXT
+
+### **line_stations**
+Columns:
+- `line_code` TEXT
+- `station_code` TEXT
+- `station_order` INTEGER
+Primary key: (line_code, station_code)
+
+### **routes**
+Columns:
+- `from_station` TEXT
+- `to_station` TEXT
+- `line_code` TEXT
+- `travel_time` INTEGER
+- `line_name` TEXT
+
+### **fares**
+Columns:
+- `from_station` TEXT
+- `to_station` TEXT
+- `weekday_fare` INTEGER
+- `weekend_fare` INTEGER
+- `total_time` TEXT
+- `stations` INTEGER
+
+### **first_last_trains**
+Columns:
+- `from_station` TEXT
+- `to_station` TEXT
+- `first_train` TEXT
+- `last_train` TEXT
+
+---
+
+## 📸 Visual Reference
+
+### Lines Data
 ![Lines](images/lines.png)
 
+---
 
-
-## 🔗 Line–Station Mapping
+### Line–Station Mapping
 ![Line Station](images/line_station.png)
 
+---
 
+### Route Overview
+![Route](images/route.png)
 
-## 📍 Shortest Path Calculation
+---
+
+### Shortest Path Output
 ![Shortest Path](images/shortest_path.png)
 
-📌 Project Overview
+---
 
-The goal of this project is to:
+### Fare Calculation Data
+![Fare Calculator](images/fare_calci.png)
 
-Convert raw CSV datasets into a relational SQLite database
+---
 
-Design a clean database schema
+### First & Last Train
+![First & Last Train](images/first_last.png)
 
-Enable easy querying and visualization using SQLite DB Browser
+---
 
-Serve as a foundation for analytics, APIs, or backend services
+## ⚙️ Getting Started (How to Run)
 
-🗂️ Data Sources (CSV Files)
+### 1️⃣ Clone the Repository
 
-The following CSV files are used to populate the database:
+```bash
+git clone https://github.com/shreyapandey-ai/delhi_metro_line.git
+cd delhi_metro_line
+2️⃣ Create and Activate Virtual Environment
+bash
+Copy code
+python3 -m venv venv
+source venv/bin/activate       # Linux / macOS
+venv\Scripts\activate          # Windows
+3️⃣ Install Dependencies
+bash
+Copy code
+pip install -r requirements.txt
+If you don’t have a requirements.txt, install manually:
 
-CSV File	Description
-stations.csv	All metro stations with codes, names, and line associations
-lines.csv	Metro line details (line code, color, start & end stations)
-routes.csv	Station-to-station connectivity across lines
-fares.csv	Fare structure between stations
-first_last_trains.csv	First and last train timings per station
-🧱 Database File
+bash
+Copy code
+pip install requests
+4️⃣ Populate the Database (ETL)
+bash
+Copy code
+python3 scraper.py
+This will:
 
-Database Name: delhi_metro_final.db
+Fetch lines
 
-Database Type: SQLite3
+Fetch stations by line
 
-Tool Recommended: DB Browser for SQLite
+Insert into SQLite database
 
-🗃️ Database Schema
+Optionally fetch fare & first/last train data for sample pairs
 
-The database follows a normalized relational design.
+5️⃣ Compute Shortest Paths
+Run the routing script:
 
-Tables Overview
-stations
+bash
+Copy code
+python3 src/app.py
+You can change origin/destination inside the script.
 
-Stores master data for metro stations.
+Example default output:
 
-station_code (PK)
+less
+Copy code
+Total stations: 249
+Distance: 720
+Path: ['RCK', 'BRKR', 'MDHS', 'ITO', 'DLIG']
+🧪 Using the Routing Output
+This script uses Dijkstra’s algorithm to compute the shortest path based on travel_time or distance-like weights derived from your routes.
 
-station_name
+Input: two station codes
 
-line_code
+Output: list of station codes representing the shortest path
 
-latitude
+If you want to use station names, convert names → codes using the stations table first.
 
-longitude
+🧠 Design Choices
+Graph built from SQLite route data
 
-lines
+Route weight = travel time in seconds
 
-Stores metro line information.
+Bidirectional edges included
 
-line_code (PK)
+Simple Python implementation avoids external graph libraries
 
-line_name
+📌 Notes
+DMRC API endpoints used here are not officially documented — they may change
 
-color
+Data availability and complete coverage may vary
 
-start_station
+Only demo/fallback data included in some tables
 
-end_station
-
-routes
-
-Defines connectivity between stations.
-
-route_id (PK)
-
-from_station
-
-to_station
-
-line_code
-
-fares
-
-Stores fare information.
-
-fare_id (PK)
-
-source_station
-
-destination_station
-
-fare_amount
-
-first_last_trains
-
-Train timing data.
-
-id (PK)
-
-station_code
-
-first_train_time
-
-last_train_time
-
-🔗 Entity Relationship (ER) Design
-
-One line → many stations
-
-Stations are connected via routes
-
-Fares depend on source & destination stations
-
-Train timings map directly to stations
-
-This structure avoids duplication and supports scalable querying.
-
-▶️ How to Use
-1️⃣ Open the Database
-sqlite3 delhi_metro_final.db
-
-
-Or open it directly in DB Browser for SQLite.
-
-2️⃣ View Tables
-.tables
-
-3️⃣ Inspect Schema
-.schema
-
-4️⃣ Sample Queries
-
-Find all stations on a specific line
-
-SELECT station_name
-FROM stations
-WHERE line_code = 'LN1';
-
-
-Get fare between two stations
-
-SELECT fare_amount
-FROM fares
-WHERE source_station = 'RAJIV_CHOWK'
-  AND destination_station = 'KASHMERE_GATE';
-
-🛠️ Tech Stack
-
-Python (CSV processing & ingestion)
-
-SQLite3
-
-DB Browser for SQLite
-
-Git & GitHub
+👤 Author
+Shreya Pandey
+GitHub: https://github.com/shreyapandey-ai
