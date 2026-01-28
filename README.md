@@ -4,8 +4,33 @@
 
 # This repository contains a structured SQLite database built from multiple CSV datasets related to the Delhi Metro network.
 The project focuses on data modeling, normalization, and querying, not just scraping or dumping CSVs.
-![Route](../images/route.png)
+## 🧭 Route Finder
+![Route](images/route.png)
 
+
+
+## 🧮 Fare Calculator
+![Fare Calculator](images/fare_calci.png)
+
+
+
+## 🕐 First & Last Train Timings
+![First Last Train](images/first_last.png)
+
+---
+
+## 🛤️ Metro Lines
+![Lines](images/lines.png)
+
+
+
+## 🔗 Line–Station Mapping
+![Line Station](images/line_station.png)
+
+
+
+## 📍 Shortest Path Calculation
+![Shortest Path](images/shortest_path.png)
 
 📌 Project Overview
 
